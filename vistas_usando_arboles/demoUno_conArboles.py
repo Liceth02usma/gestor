@@ -21,7 +21,7 @@ class DirectoryExplorer:
         self.treeview.pack(fill=tk.BOTH, expand=True)
 
         self.populate_treeview()
-
+        self.tree2 = self.tree
 
         self.treeview.bind('<<TreeviewOpen>>', self.on_open)
         self.treeview.bind('<Double-Button-1>', self.on_select)
@@ -130,11 +130,12 @@ class DirectoryExplorer:
         
 
     def go_up(self):
-        parent = os.path.dirname(self.current_path)
-        if parent != self.current_path:
-            self.current_path = parent
-            self.path_var.set(self.current_path)
-            self.populate_treeview()
+        carpeta = filedialog.askdirectory()
+        self.tree.vaciar_arbol()
+        # Imprime la ruta del documento seleccionado
+        self.treeview.delete(*self.treeview.get_children())
+        self.add_directory("", carpeta)
+
     
     #tampoco funciona
     def rename(self):
@@ -149,10 +150,10 @@ class DirectoryExplorer:
 
                 new_path = os.path.join(os.path.dirname(path), new_name)
                 
-                
                 try:
                     os.rename(path, new_path)
                     self.populate_treeview()
+
                 except OSError as error:
                    
                     messagebox.showerror("Error", f"No se pudo renombrar '{os.path.basename(path)}'")
@@ -183,11 +184,14 @@ class DirectoryExplorer:
         
     def find_archive(self):
         valor = self.entry.get()
-        print(self.tree.find_node(valor, None))
+        self.tree.print_node()
+        print("origin",self.tree.find_node(valor, None))
         obj = self.tree.find_node(valor, None)
+        self.tree2.print_node()
         if obj is not None:
             self.treeview.delete(*self.treeview.get_children())
             self.add_directory("",obj.data.path)
+            self.tree = self.tree2
 
 if __name__ == "__main__":
     root = tk.Tk()

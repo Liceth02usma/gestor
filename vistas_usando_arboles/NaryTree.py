@@ -14,13 +14,28 @@ class NaryTree(object):
         else:
              for node in self._find_node(parent.name,parent.id, self.root):
                 node.children.append(new_node)
-                
+             
+             
+    def _vaciar_arbol(self, nodo):
+        # Eliminar los hijos del nodo actual de manera recursiva
+        for hijo in nodo.children:
+            self._vaciar_arbol(hijo)
+
+        # Limpiar la lista de hijos del nodo actual
+        nodo.children.clear()
+        
+    def vaciar_arbol(self):
+        self._vaciar_arbol(self.root)
+        self.root = None 
+        
+        
     
     def _find_node(self, data,id, current_node):
         nodes = []
+        id_node = current_node.data.id
         if id == None:
-            current_node.data.id = None
-        if current_node.data.name == data and current_node.data.id == id:
+            id_node = None
+        if current_node.data.name == data and id_node == id:
             nodes.append(current_node)
         for child in current_node.children:
              nodes += self._find_node(data,id, child)
@@ -64,9 +79,10 @@ class NaryTree(object):
 
     
     def _print_node(self, node, altura = 0):
-        print((altura*"--")+str(node.data.name)+str(node.children))
-        for node_children in node.children:
-            self._print_node(node_children,altura + 1) #la altura afuera se mantiene constante
+        if node:
+            print((altura*"--")+str(node.data.name)+str(node.data.id))
+            for node_children in node.children:
+                self._print_node(node_children,altura + 1) #la altura afuera se mantiene constante
         
     
     def print_node (self):
