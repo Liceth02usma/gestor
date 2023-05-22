@@ -16,6 +16,8 @@ class DirectoryExplorer:
         self.path_var = tk.StringVar()
         self.path_var.set(self.current_path)
         
+        self.path_copy = None
+        
 
         self.treeview = ttk.Treeview(self.master)
         self.treeview.pack(fill=tk.BOTH, expand=True)
@@ -44,7 +46,15 @@ class DirectoryExplorer:
         rename_button.pack(side=tk.LEFT)
         
         rename_button = tk.Button(button_frame, text="Renombrar", command=self.rename)
+        rename_button.pack(side=tk.LEFT)
         
+        rename_button = tk.Button(button_frame, text="Copiar", command=self.copiar)
+        rename_button.pack(side=tk.LEFT)
+        
+        rename_button = tk.Button(button_frame, text="Cortar", command=self.cortar)
+        rename_button.pack(side=tk.LEFT)
+        
+        rename_button = tk.Button(button_frame, text="Pegar", command=self.pegar)
         rename_button.pack(side=tk.LEFT)
 
         delete_button = tk.Button(button_frame, text="Eliminar", command=self.delete)
@@ -173,9 +183,8 @@ class DirectoryExplorer:
                     else:
                         os.remove(path)  # Elimina el archivo
                         node = self.tree.find_node(os.path.basename(path), item)
-                        self.tree.eliminar_nodo(node)
+                        self.populate_treeview()
                         self.tree.print_node()
-                    self.populate_treeview()
                 except OSError:
                     messagebox.showerror("Error", f"No se pudo eliminar '{os.path.basename(path)}'")
 
@@ -183,6 +192,45 @@ class DirectoryExplorer:
     def quit(self):
         self.master.quit()
         
+        
+        
+    def copiar(self): #Archivos
+        item = self.treeview.focus()
+        path = self.get_item_path(item)
+        self.path_copy = path
+
+    
+    def cortar(self): #Archivos
+        pass
+    
+    def pegar(self): #Archivos
+        item = self.treeview.focus()
+        path = self.get_item_path(item)
+        if os.path.isdir(path):
+            try:
+                archivo_destino = os.path.join(path, os.path.basename(self.path_copy))
+                if not os.path.exists(archivo_destino):
+                    shutil.copy(self.path_copy, path)
+                    
+                else:
+                    base_ruta = ""
+                    if "." in os.path.basename(self.path_copy):
+                        partes = os.path.basename(self.path_copy).split(".")
+                        base_ruta = partes[0] + "_copy." + partes[1] 
+                    else:
+                        base_ruta = os.path.basename(self.path_copy) + "_copy"
+                        
+                    new_path = os.path.join(path, base_ruta)  
+                    print(new_path)  
+                    shutil.copy(self.path_copy, new_path)
+                self.populate_treeview()
+       
+
+            except Exception as e:
+                print(e)
+                messagebox.showerror("Error", f"No se pudo copiar '{os.path.basename(self.path_copy)}'")
+            
+           
     def find_archive(self):
         valor = self.entry.get()
         self.tree.print_node()
