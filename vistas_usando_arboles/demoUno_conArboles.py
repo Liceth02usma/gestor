@@ -44,6 +44,7 @@ class DirectoryExplorer:
         rename_button.pack(side=tk.LEFT)
         
         rename_button = tk.Button(button_frame, text="Renombrar", command=self.rename)
+        
         rename_button.pack(side=tk.LEFT)
 
         delete_button = tk.Button(button_frame, text="Eliminar", command=self.delete)
