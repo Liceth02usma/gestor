@@ -5,9 +5,14 @@ from NaryTree import NaryTree
 from NaryTree import Archivo
 from tkinter import ttk, filedialog, messagebox, simpledialog
 
+tree3 = None
+cont=0
+
 class DirectoryExplorer:
 
     def __init__(self, master):
+        global cont
+        global tree3
         self.master = master
         self.master.title("Explorador de Directorios")
         self.tree = NaryTree()
@@ -24,7 +29,7 @@ class DirectoryExplorer:
         self.treeview.pack(fill=tk.BOTH, expand=True)
 
         self.populate_treeview()
-        self.tree2 = self.tree
+            
 
         self.treeview.bind('<<TreeviewOpen>>', self.on_open)
         self.treeview.bind('<Double-Button-1>', self.on_select)
@@ -88,14 +93,14 @@ class DirectoryExplorer:
             # self.treeview.delete(*self.treeview.get_children(item))
             # self.add_directory(item, path)
         else:
-            print("aqui estoy perros")
+           
             os.startfile(path)
         
 
     def on_select(self, event):
         item = self.treeview.focus()
         path = self.get_item_path(item)
-        print("aqui estoy perros otra vez")
+        
         if os.path.isdir(path):
             pass
             # self.treeview.delete(*self.treeview.get_children(item))
@@ -142,11 +147,13 @@ class DirectoryExplorer:
         
 
     def go_up(self):
+        global cont
         carpeta = filedialog.askdirectory()
         self.tree.vaciar_arbol()
         # Imprime la ruta del documento seleccionado
         self.treeview.delete(*self.treeview.get_children())
         self.add_directory("", carpeta)
+        cont = 0
 
     
     #tampoco funciona
@@ -245,15 +252,17 @@ class DirectoryExplorer:
             
            
     def find_archive(self):
+        global tree3
         valor = self.entry.get()
-        self.tree.print_node()
         print("origin",self.tree.find_node(valor, None))
         obj = self.tree.find_node(valor, None)
-        self.tree2.print_node()
         if obj is not None:
             self.treeview.delete(*self.treeview.get_children())
             self.add_directory("",obj.data.path)
-            self.tree = self.tree2
+        else:
+            self.treeview.delete(*self.treeview.get_children())
+            self.add_directory("",self.current_path)
+
 
 if __name__ == "__main__":
     root = tk.Tk()

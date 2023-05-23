@@ -6,6 +6,7 @@ class NaryTreeNode(object):
 class NaryTree(object):
     def __init__(self):
         self.root=  None
+        self.respaldo = None
         
     def add_node(self, data, parent=None):
         new_node = NaryTreeNode(data)
