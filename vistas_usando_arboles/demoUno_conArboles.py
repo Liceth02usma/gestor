@@ -17,7 +17,8 @@ class DirectoryExplorer:
         self.path_var.set(self.current_path)
         
         self.path_copy = None
-        
+        self.is_copiar = False
+        self.ruta_origen = None
 
         self.treeview = ttk.Treeview(self.master)
         self.treeview.pack(fill=tk.BOTH, expand=True)
@@ -198,37 +199,49 @@ class DirectoryExplorer:
         item = self.treeview.focus()
         path = self.get_item_path(item)
         self.path_copy = path
-
+        self.is_copiar = True
     
     def cortar(self): #Archivos
-        pass
+        item = self.treeview.focus()
+        path = self.get_item_path(item)
+        self.is_copiar = False
+        self.ruta_origen = path
+        
     
     def pegar(self): #Archivos
         item = self.treeview.focus()
         path = self.get_item_path(item)
-        if os.path.isdir(path):
-            try:
-                archivo_destino = os.path.join(path, os.path.basename(self.path_copy))
-                if not os.path.exists(archivo_destino):
-                    shutil.copy(self.path_copy, path)
-                    
-                else:
-                    base_ruta = ""
-                    if "." in os.path.basename(self.path_copy):
-                        partes = os.path.basename(self.path_copy).split(".")
-                        base_ruta = partes[0] + "_copy." + partes[1] 
-                    else:
-                        base_ruta = os.path.basename(self.path_copy) + "_copy"
+        if self.is_copiar:
+            if os.path.isdir(path):
+                try:
+                    archivo_destino = os.path.join(path, os.path.basename(self.path_copy))
+                    if not os.path.exists(archivo_destino):
+                        shutil.copy(self.path_copy, path)
                         
-                    new_path = os.path.join(path, base_ruta)  
-                    print(new_path)  
-                    shutil.copy(self.path_copy, new_path)
-                self.populate_treeview()
-       
+                    else:
+                        base_ruta = ""
+                        if "." in os.path.basename(self.path_copy):
+                            partes = os.path.basename(self.path_copy).split(".")
+                            base_ruta = partes[0] + "_copy." + partes[1] 
+                        else:
+                            base_ruta = os.path.basename(self.path_copy) + "_copy"
+                            
+                        new_path = os.path.join(path, base_ruta)  
+                        print(new_path)  
+                        shutil.copy(self.path_copy, new_path)
+                    self.populate_treeview()
+        
 
+                except Exception as e:
+                    print(e)
+                    messagebox.showerror("Error", f"No se pudo copiar '{os.path.basename(self.path_copy)}'")
+        else:
+            try:
+                if os.path.dirname(self.ruta_origen) != path:
+                    shutil.move(self.ruta_origen, path)
+                    self.populate_treeview()
             except Exception as e:
-                print(e)
-                messagebox.showerror("Error", f"No se pudo copiar '{os.path.basename(self.path_copy)}'")
+                messagebox.showerror("Error", f"No se pudo cortar '{os.path.basename(self.path_copy)}'")
             
            
     def find_archive(self):
