@@ -41,6 +41,15 @@ class NaryTree(object):
         for child in current_node.children:
              nodes += self._find_node(data,id, child)
         return nodes
+    
+    def _search_node(self, data, current_node):
+        nodes = []
+        id_node = current_node.data.id
+        if data in current_node.data.name:
+            nodes.append(current_node)
+        for child in current_node.children:
+             nodes += self._search_node(data, child)
+        return nodes
 
     def find_node(self, data,id):
         
@@ -49,7 +58,11 @@ class NaryTree(object):
              return nodes[0]
         return None
 
- 
+    def search_node(self, data):
+        nodes = self._search_node(data, self.root)
+        if nodes:
+             return nodes
+        return None
         
 
     def _eliminar_nodos(self, arbol, nodo):
